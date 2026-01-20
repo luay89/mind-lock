@@ -1,0 +1,938 @@
+/* ===== المتغيرات الأساسية ===== */
+:root {
+    /* الألوان الرئيسية */
+    --primary-color: #6c5ce7;
+    --primary-dark: #5641e5;
+    --primary-light: #a29bfe;
+    
+    --secondary-color: #00cec9;
+    --secondary-dark: #00b5b0;
+    
+    --accent-color: #fd79a8;
+    --accent-dark: #e84393;
+    
+    /* ألوان الخلفية */
+    --bg-dark: #1a1a2e;
+    --bg-medium: #16213e;
+    --bg-light: #0f3460;
+    
+    /* ألوان النص */
+    --text-primary: #ffffff;
+    --text-secondary: #b2bec3;
+    --text-muted: #636e72;
+    
+    /* ألوان الحالة */
+    --success-color: #00b894;
+    --error-color: #ff6b6b;
+    --warning-color: #fdcb6e;
+    
+    /* الظلال */
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+    
+    /* الانتقالات */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+    
+    /* الحدود */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 20px;
+    --radius-full: 50%;
+}
+
+/* ===== إعادة التعيين الأساسية ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-medium) 50%, var(--bg-light) 100%);
+    min-height: 100vh;
+    color: var(--text-primary);
+    overflow-x: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* ===== الشاشات ===== */
+.screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1;
+}
+
+.screen.active {
+    display: flex;
+}
+
+.overlay-screen {
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(10px);
+    z-index: 100;
+}
+
+/* ===== شاشة البداية ===== */
+#start-screen {
+    background: radial-gradient(circle at center, var(--bg-medium) 0%, var(--bg-dark) 100%);
+}
+
+.logo-container {
+    text-align: center;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+.logo {
+    font-size: 80px;
+    margin-bottom: 10px;
+    animation: pulse 2s infinite;
+}
+
+.game-title {
+    font-size: 3rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(108, 92, 231, 0.5);
+    margin-bottom: 10px;
+}
+
+.tagline {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 40px;
+}
+
+.start-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    animation: fadeInUp 0.8s ease-out 0.3s both;
+}
+
+.sound-toggle {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    font-size: 1.5rem;
+}
+
+.sound-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+/* ===== الأزرار ===== */
+.btn {
+    padding: 15px 40px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-normal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 200px;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.4);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(108, 92, 231, 0.6);
+}
+
+.btn-primary:active {
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, var(--secondary-color), var(--secondary-dark));
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 206, 201, 0.4);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0, 206, 201, 0.6);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--text-primary);
+    border: 2px solid var(--text-secondary);
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--text-primary);
+}
+
+.btn-icon {
+    font-size: 1.2rem;
+}
+
+/* ===== شاشة اللعب ===== */
+#game-screen {
+    justify-content: flex-start;
+    padding-top: 20px;
+    background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-medium) 100%);
+}
+
+/* الشريط العلوي */
+.top-bar {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    margin-bottom: 15px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.stat-icon {
+    font-size: 1.2rem;
+}
+
+.level-badge {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    padding: 8px 15px;
+    border-radius: var(--radius-md);
+}
+
+/* المؤقت */
+.timer-container {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.timer-bar {
+    flex: 1;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+}
+
+.timer-progress {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, var(--success-color), var(--warning-color), var(--error-color));
+    border-radius: var(--radius-sm);
+    transition: width 1s linear;
+}
+
+#timer-text {
+    font-size: 1.2rem;
+    font-weight: 700;
+    min-width: 40px;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+/* منطقة اللغز */
+.puzzle-container {
+    width: 100%;
+    max-width: 500px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-lg);
+    padding: 25px;
+    margin-bottom: 20px;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.puzzle-type {
+    display: inline-block;
+    padding: 5px 15px;
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-dark));
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.puzzle-question {
+    font-size: 1.3rem;
+    line-height: 1.6;
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--text-primary);
+}
+
+/* منطقة الإدخال */
+.input-area {
+    margin-bottom: 15px;
+}
+
+.answer-input {
+    width: 100%;
+    padding: 15px 20px;
+    font-size: 1.1rem;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    text-align: center;
+    transition: var(--transition-fast);
+}
+
+.answer-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.answer-input::placeholder {
+    color: var(--text-muted);
+}
+
+/* منطقة الخيارات */
+.options-area {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.option-btn {
+    padding: 15px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.option-btn:hover {
+    border-color: var(--primary-color);
+    background: rgba(108, 92, 231, 0.2);
+    transform: scale(1.02);
+}
+
+.option-btn:active {
+    transform: scale(0.98);
+}
+
+.option-btn.selected {
+    border-color: var(--primary-color);
+    background: rgba(108, 92, 231, 0.3);
+}
+
+.option-btn.correct {
+    border-color: var(--success-color);
+    background: rgba(0, 184, 148, 0.3);
+    animation: correctPulse 0.5s ease;
+}
+
+.option-btn.wrong {
+    border-color: var(--error-color);
+    background: rgba(255, 107, 107, 0.3);
+    animation: shake 0.5s ease;
+}
+
+/* أزرار المساعدة */
+.help-buttons {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.help-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    min-width: 80px;
+}
+
+.help-btn:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.help-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.help-icon {
+    font-size: 1.5rem;
+}
+
+.help-text {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.help-cost {
+    font-size: 0.7rem;
+    color: var(--warning-color);
+}
+
+/* زر الإجابة */
+.submit-btn {
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 20px;
+}
+
+/* زر القائمة */
+.menu-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    width: 45px;
+    height: 45px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    z-index: 50;
+}
+
+.menu-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ===== بطاقات النتائج ===== */
+.result-card {
+    background: var(--bg-medium);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    text-align: center;
+    max-width: 350px;
+    width: 100%;
+    animation: popIn 0.4s ease-out;
+}
+
+.result-icon {
+    font-size: 4rem;
+    margin-bottom: 15px;
+}
+
+.result-card h2 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.result-message {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+}
+
+/* بطاقة الفوز */
+.win-card {
+    border: 2px solid var(--success-color);
+    box-shadow: 0 0 30px rgba(0, 184, 148, 0.3);
+}
+
+.reward-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(0, 184, 148, 0.1);
+    border-radius: var(--radius-md);
+}
+
+.reward-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--success-color);
+}
+
+.reward-icon {
+    font-size: 1.5rem;
+}
+
+.result-stats {
+    margin-bottom: 20px;
+}
+
+.stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-label {
+    color: var(--text-secondary);
+}
+
+.stat-value {
+    font-weight: 600;
+}
+
+/* بطاقة الخسارة */
+.lose-card {
+    border: 2px solid var(--error-color);
+    box-shadow: 0 0 30px rgba(255, 107, 107, 0.3);
+}
+
+.lives-lost {
+    padding: 15px;
+    background: rgba(255, 107, 107, 0.1);
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+/* بطاقة انتهاء اللعبة */
+.gameover-card {
+    border: 2px solid var(--warning-color);
+    box-shadow: 0 0 30px rgba(253, 203, 110, 0.3);
+}
+
+.gameover-options {
+    margin: 20px 0;
+}
+
+.wait-option {
+    margin-bottom: 20px;
+}
+
+.countdown-timer {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--warning-color);
+    margin-top: 10px;
+}
+
+.divider {
+    color: var(--text-muted);
+    margin: 15px 0;
+    position: relative;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.divider::before {
+    right: 60%;
+}
+
+.divider::after {
+    left: 60%;
+}
+
+.cost-badge {
+    margin-right: 10px;
+    padding: 3px 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+}
+
+/* بطاقة انتهاء الوقت */
+.timeout-card {
+    border: 2px solid var(--warning-color);
+}
+
+.correct-answer {
+    padding: 15px;
+    background: rgba(108, 92, 231, 0.2);
+    border-radius: var(--radius-md);
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+}
+
+/* ===== النوافذ المنبثقة ===== */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--bg-medium);
+    border-radius: var(--radius-lg);
+    padding: 25px;
+    max-width: 350px;
+    width: 100%;
+    animation: popIn 0.3s ease-out;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.modal-header h3 {
+    font-size: 1.3rem;
+}
+
+.close-modal {
+    width: 35px;
+    height: 35px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: var(--text-primary);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.close-modal:hover {
+    background: rgba(255, 107, 107, 0.3);
+}
+
+.modal-body {
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    line-height: 1.6;
+}
+
+/* قائمة الإيقاف */
+.pause-content {
+    text-align: center;
+}
+
+.pause-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+}
+
+.pause-stats {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.pause-stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pause-stat:last-child {
+    border-bottom: none;
+}
+
+.pause-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.pause-buttons .btn {
+    width: 100%;
+}
+
+.sound-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sound-btn {
+    width: 45px;
+    height: 45px;
+    border-radius: var(--radius-full);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.sound-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* ===== الرسوم المتحركة ===== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-10px); }
+    80% { transform: translateX(10px); }
+}
+
+@keyframes correctPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 10px rgba(108, 92, 231, 0.5); }
+    50% { box-shadow: 0 0 25px rgba(108, 92, 231, 0.8); }
+}
+
+/* ===== التصميم المتجاوب ===== */
+@media (max-width: 480px) {
+    html {
+        font-size: 14px;
+    }
+
+    .game-title {
+        font-size: 2.5rem;
+    }
+
+    .logo {
+        font-size: 60px;
+    }
+
+    .btn {
+        padding: 12px 30px;
+        min-width: 180px;
+    }
+
+    .puzzle-question {
+        font-size: 1.1rem;
+    }
+
+    .options-area {
+        grid-template-columns: 1fr;
+    }
+
+    .help-buttons {
+        gap: 10px;
+    }
+
+    .help-btn {
+        padding: 10px 15px;
+        min-width: 70px;
+    }
+
+    .help-icon {
+        font-size: 1.2rem;
+    }
+
+    .result-card {
+        padding: 20px;
+    }
+
+    .result-icon {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .help-buttons {
+        flex-wrap: wrap;
+    }
+
+    .help-btn {
+        flex: 1;
+        min-width: 80px;
+    }
+}
+
+/* ===== تحسينات للشاشات الكبيرة ===== */
+@media (min-width: 768px) {
+    .puzzle-container {
+        max-width: 600px;
+    }
+
+    .top-bar {
+        max-width: 600px;
+    }
+
+    .timer-container {
+        max-width: 600px;
+    }
+
+    .help-buttons {
+        max-width: 600px;
+    }
+
+    .submit-btn {
+        max-width: 400px;
+    }
+}
+
+/* ===== تأثيرات إضافية ===== */
+.shimmer {
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+/* تأثير التحميل */
+.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 24px;
+    height: 24px;
+    margin: -12px 0 0 -12px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* إخفاء شريط التمرير */
+::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+/* تحسين الأداء */
+.screen,
+.modal,
+.btn,
+.option-btn {
+    will-change: transform, opacity;
+}

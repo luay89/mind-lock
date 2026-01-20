@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Mind Lock - لعبة الألغاز الفكرية</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ===== شاشة البداية ===== -->
+    <div id="start-screen" class="screen active">
+        <div class="logo-container">
+            <div class="logo">🧠</div>
+            <h1 class="game-title">Mind Lock</h1>
+            <p class="tagline">أطلق العنان لعقلك</p>
+        </div>
+        <div class="start-buttons">
+            <button id="play-btn" class="btn btn-primary">
+                <span class="btn-icon">▶</span>
+                ابدأ اللعب
+            </button>
+            <button id="continue-btn" class="btn btn-secondary" style="display: none;">
+                <span class="btn-icon">↺</span>
+                متابعة اللعب
+            </button>
+        </div>
+        <div class="sound-toggle" id="sound-toggle">
+            <span id="sound-icon">🔊</span>
+        </div>
+    </div>
+
+    <!-- ===== شاشة اللعب الرئيسية ===== -->
+    <div id="game-screen" class="screen">
+        <!-- شريط المعلومات العلوي -->
+        <div class="top-bar">
+            <div class="stat-item">
+                <span class="stat-icon">💰</span>
+                <span id="coins-display">0</span>
+            </div>
+            <div class="stat-item level-badge">
+                <span class="stat-icon">🎯</span>
+                <span>المستوى </span>
+                <span id="level-display">1</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-icon">❤️</span>
+                <span id="lives-display">3</span>
+            </div>
+        </div>
+
+        <!-- منطقة المؤقت -->
+        <div class="timer-container">
+            <div class="timer-bar">
+                <div id="timer-progress" class="timer-progress"></div>
+            </div>
+            <span id="timer-text">60</span>
+        </div>
+
+        <!-- منطقة اللغز -->
+        <div class="puzzle-container">
+            <div class="puzzle-type" id="puzzle-type">لغز منطقي</div>
+            <div class="puzzle-question" id="puzzle-question">
+                ما هو الرقم التالي في السلسلة؟
+            </div>
+            
+            <!-- منطقة الإدخال للألغاز النصية -->
+            <div id="input-area" class="input-area" style="display: none;">
+                <input type="text" id="answer-input" class="answer-input" placeholder="اكتب إجابتك هنا...">
+            </div>
+
+            <!-- منطقة الخيارات للألغاز متعددة الخيارات -->
+            <div id="options-area" class="options-area">
+                <!-- الخيارات ستُضاف هنا ديناميكياً -->
+            </div>
+        </div>
+
+        <!-- أزرار المساعدة -->
+        <div class="help-buttons">
+            <button id="hint-btn" class="help-btn" data-cost="10">
+                <span class="help-icon">💡</span>
+                <span class="help-text">تلميح</span>
+                <span class="help-cost">10 💰</span>
+            </button>
+            <button id="reveal-btn" class="help-btn" data-cost="25">
+                <span class="help-icon">👁️</span>
+                <span class="help-text">كشف</span>
+                <span class="help-cost">25 💰</span>
+            </button>
+            <button id="skip-btn" class="help-btn" data-cost="50">
+                <span class="help-icon">⏭️</span>
+                <span class="help-text">تخطي</span>
+                <span class="help-cost">50 💰</span>
+            </button>
+        </div>
+
+        <!-- زر الإجابة للألغاز النصية -->
+        <button id="submit-btn" class="btn btn-primary submit-btn" style="display: none;">
+            تأكيد الإجابة
+        </button>
+
+        <!-- زر القائمة -->
+        <button id="menu-btn" class="menu-btn">☰</button>
+    </div>
+
+    <!-- ===== شاشة الفوز ===== -->
+    <div id="win-screen" class="screen overlay-screen">
+        <div class="result-card win-card">
+            <div class="result-icon">🏆</div>
+            <h2>أحسنت!</h2>
+            <p class="result-message">لقد حللت اللغز بنجاح</p>
+            <div class="reward-display">
+                <span class="reward-amount" id="reward-amount">+20</span>
+                <span class="reward-icon">💰</span>
+            </div>
+            <div class="result-stats">
+                <div class="stat">
+                    <span class="stat-label">الوقت المتبقي</span>
+                    <span class="stat-value" id="time-bonus">45 ثانية</span>
+                </div>
+            </div>
+            <button id="next-level-btn" class="btn btn-primary">
+                المستوى التالي ➡️
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== شاشة الخسارة ===== -->
+    <div id="lose-screen" class="screen overlay-screen">
+        <div class="result-card lose-card">
+            <div class="result-icon">😔</div>
+            <h2>إجابة خاطئة!</h2>
+            <p class="result-message">لا تستسلم، حاول مرة أخرى</p>
+            <div class="lives-lost">
+                <span>المحاولات المتبقية: </span>
+                <span id="remaining-lives">2</span>
+                <span> ❤️</span>
+            </div>
+            <button id="retry-btn" class="btn btn-primary">
+                حاول مرة أخرى 🔄
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== شاشة انتهاء المحاولات ===== -->
+    <div id="gameover-screen" class="screen overlay-screen">
+        <div class="result-card gameover-card">
+            <div class="result-icon">💔</div>
+            <h2>انتهت المحاولات!</h2>
+            <p class="result-message">يمكنك الانتظار أو استخدام العملات</p>
+            
+            <div class="gameover-options">
+                <div class="wait-option">
+                    <p>انتظر لاستعادة المحاولات</p>
+                    <div class="countdown-timer" id="countdown-timer">
+                        <span id="countdown-display">05:00</span>
+                    </div>
+                </div>
+                
+                <div class="divider">أو</div>
+                
+                <button id="buy-life-btn" class="btn btn-secondary">
+                    شراء حياة إضافية
+                    <span class="cost-badge">30 💰</span>
+                </button>
+            </div>
+            
+            <button id="home-btn" class="btn btn-outline">
+                العودة للقائمة 🏠
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== شاشة انتهاء الوقت ===== -->
+    <div id="timeout-screen" class="screen overlay-screen">
+        <div class="result-card timeout-card">
+            <div class="result-icon">⏰</div>
+            <h2>انتهى الوقت!</h2>
+            <p class="result-message">كان عليك أن تكون أسرع</p>
+            <div class="correct-answer">
+                <span>الإجابة الصحيحة: </span>
+                <span id="correct-answer-timeout"></span>
+            </div>
+            <button id="retry-timeout-btn" class="btn btn-primary">
+                حاول مرة أخرى 🔄
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== نافذة التلميح ===== -->
+    <div id="hint-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💡 تلميح</h3>
+                <button class="close-modal" id="close-hint">✕</button>
+            </div>
+            <div class="modal-body">
+                <p id="hint-text">هذا هو التلميح...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== نافذة الكشف ===== -->
+    <div id="reveal-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>👁️ كشف جزئي</h3>
+                <button class="close-modal" id="close-reveal">✕</button>
+            </div>
+            <div class="modal-body">
+                <p id="reveal-text">جزء من الإجابة...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== قائمة الإيقاف المؤقت ===== -->
+    <div id="pause-menu" class="modal">
+        <div class="modal-content pause-content">
+            <h3>⏸️ إيقاف مؤقت</h3>
+            <div class="pause-stats">
+                <div class="pause-stat">
+                    <span>المستوى الحالي:</span>
+                    <span id="pause-level">1</span>
+                </div>
+                <div class="pause-stat">
+                    <span>العملات:</span>
+                    <span id="pause-coins">0</span>
+                </div>
+                <div class="pause-stat">
+                    <span>المحاولات:</span>
+                    <span id="pause-lives">3</span>
+                </div>
+            </div>
+            <div class="pause-buttons">
+                <button id="resume-btn" class="btn btn-primary">استمرار ▶️</button>
+                <button id="restart-btn" class="btn btn-secondary">إعادة المستوى 🔄</button>
+                <button id="quit-btn" class="btn btn-outline">الخروج 🚪</button>
+            </div>
+            <div class="sound-option">
+                <span>الصوت:</span>
+                <button id="pause-sound-toggle" class="sound-btn">🔊</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
