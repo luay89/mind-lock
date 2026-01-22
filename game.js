@@ -397,6 +397,10 @@ const LEVELS = [
     }
 ];
 
+// بنك الأسئلة: إذا كان questions/questionBank.js محمّل، سيتم استخدامه (300+ سؤال)
+// وإلا سيتم استخدام الأسئلة الافتراضية داخل هذا الملف.
+const QUESTIONS = window.MIND_LOCK_QUESTIONS || LEVELS;
+
 // ============================================================
 // 3. إعدادات اللعبة (CONFIG)
 // ============================================================
@@ -448,6 +452,10 @@ const GameState = {
     // بيانات الجولة الحالية
     timeRemaining: 60,
     roundStatus: 'idle', // 'idle' | 'playing' | 'win' | 'lose' | 'timeout' | 'paused' | 'checking'
+    currentQuestionId: null, // السؤال الحالي (ID)
+    
+    // إدارة الأسئلة (منع التكرار داخل نفس الجلسة)
+    usedQuestionIds: new Set(), // كل سؤال تم عرضه (صح أو خطأ) لا يعود مرة أخرى في نفس الجلسة
     
     // حالة المساعدات في المستوى الحالي
     hintUsed: false,
@@ -476,6 +484,8 @@ const GameState = {
         this.totalCorrectAnswers = 0;
         this.totalWrongAnswers = 0;
         this.fastAnswers = 0;
+        this.usedQuestionIds = new Set();
+        this.currentQuestionId = null;
     },
     
     /**
@@ -571,38 +581,96 @@ const GameState = {
     
     /**
      * الحصول على بيانات المستوى الحالي مع تطبيق الصعوبة التصاعدية
+     * يستخدم getCurrentQuestionData للحصول على السؤال الحالي
      */
     getCurrentLevelData() {
-        const level = LEVELS.find(l => l.id === this.currentLevel);
-        if (!level) return null;
-        
-        // حساب الصعوبة التصاعدية
-        const levelIndex = this.currentLevel - 1;
-        const scaling = CONFIG.difficultyScaling;
-        
-        // تقليل الوقت تصاعدياً
-        const timeReduction = Math.min(
-            levelIndex * scaling.timeReduction,
-            scaling.maxTimeReduction
-        );
-        const adjustedTime = Math.floor(level.baseTimeLimit * (1 - timeReduction));
-        
-        // زيادة المكافأة تصاعدياً
-        const rewardIncrease = levelIndex * scaling.rewardIncrease;
-        const adjustedReward = Math.floor(level.baseReward * (1 + rewardIncrease));
-        
-        return {
-            ...level,
-            timeLimit: Math.max(adjustedTime, 20), // حد أدنى 20 ثانية
-            reward: adjustedReward
-        };
+        return this.getCurrentQuestionData();
     },
     
     /**
      * التحقق من اكتمال جميع المستويات
      */
     isGameComplete() {
-        return this.currentLevel > LEVELS.length;
+        return this.currentLevel > this.getMaxLevel();
+    },
+
+    /**
+     * أقصى مستوى موجود داخل بنك الأسئلة
+     */
+    getMaxLevel() {
+        const levels = QUESTIONS.map(q => (q.level ?? q.id ?? 1));
+        return levels.length ? Math.max(...levels) : 1;
+    },
+
+    /**
+     * إرجاع الأسئلة الخاصة بمستوى محدد
+     */
+    getQuestionsForLevel(level) {
+        return QUESTIONS.filter(q => (q.level ?? q.id) === level);
+    },
+
+    /**
+     * اختيار سؤال عشوائي من نفس المستوى (بدون تكرار). 
+     * إذا نفدت أسئلة المستوى، ينتقل تلقائياً للمستوى التالي.
+     */
+    getRandomQuestion() {
+        const maxLevel = this.getMaxLevel();
+
+        while (this.currentLevel <= maxLevel) {
+            const candidates = this.getQuestionsForLevel(this.currentLevel)
+                .filter(q => !this.usedQuestionIds.has(q.id));
+
+            if (candidates.length === 0) {
+                // نفدت أسئلة المستوى الحالي -> انتقل للمستوى التالي
+                this.currentLevel++;
+                continue;
+            }
+
+            const randomIndex = Math.floor(Math.random() * candidates.length);
+            const picked = candidates[randomIndex];
+            this.currentQuestionId = picked.id;
+            this.usedQuestionIds.add(picked.id);
+            return picked;
+        }
+
+        return null;
+    },
+    
+    /**
+     * الحصول على بيانات السؤال الحالي مع تطبيق الصعوبة التصاعدية
+     */
+    getCurrentQuestionData() {
+        const question = QUESTIONS.find(l => l.id === this.currentQuestionId);
+        if (!question) return null;
+
+        // نظام صعوبة تصاعدي حقيقي حسب المستوى:
+        // 1–5 سهل: وقت أطول
+        // 6–15 متوسط: وقت أقل + خيارات متقاربة (يتم دعمها من بنك الأسئلة)
+        // 16+ صعب: وقت أقل بشكل ملموس
+        const level = this.currentLevel;
+
+        const band = (level <= 5)
+            ? { minTime: 35, rewardMult: 1.0 }
+            : (level <= 15)
+                ? { minTime: 25, rewardMult: 1.15 }
+                : { minTime: 15, rewardMult: 1.35 };
+
+        // تقليل تدريجي للوقت (تصاعدي) + دفعة تقليل إضافية بعد مستويات معينة
+        const progressiveReduction = Math.min((level - 1) * 0.03, 0.55); // حتى 55%
+        let timeLimit = Math.floor(question.baseTimeLimit * (1 - progressiveReduction));
+        if (level >= 6 && level <= 15) timeLimit = Math.floor(timeLimit * 0.92);
+        if (level >= 16) timeLimit = Math.floor(timeLimit * 0.85);
+        timeLimit = Math.max(timeLimit, band.minTime);
+
+        // مكافأة تصاعدية واضحة
+        const rewardScale = 1 + (level - 1) * 0.08;
+        const reward = Math.max(1, Math.floor(question.baseReward * rewardScale * band.rewardMult));
+
+        return {
+            ...question,
+            timeLimit,
+            reward
+        };
     }
 };
 
@@ -992,12 +1060,15 @@ const GameLogic = {
         GameState.resetRoundState();
         GameState.roundStatus = 'playing';
         
-        // الحصول على بيانات المستوى
-        const level = GameState.getCurrentLevelData();
-        if (!level) {
+        // الحصول على سؤال عشوائي من المستوى المناسب
+        const question = GameState.getRandomQuestion();
+        if (!question) {
             this.showVictoryScreen();
             return;
         }
+        
+        // الحصول على بيانات السؤال مع الصعوبة التصاعدية
+        const level = GameState.getCurrentLevelData();
         
         // تحديث العرض
         UI.updateDisplay();
@@ -1122,6 +1193,7 @@ const GameLogic = {
     
     /**
      * معالجة الإجابة الخاطئة
+     * يتم الانتقال لسؤال جديد بدلاً من إعادة نفس السؤال
      */
     handleWrongAnswer() {
         Timer.stop();
@@ -1129,6 +1201,8 @@ const GameLogic = {
         GameState.roundStatus = 'lose';
         GameState.totalWrongAnswers++;
         GameState.loseLife();
+        
+        // السؤال لن يتكرر لأنه تمت إضافته إلى usedQuestionIds عند اختياره
         
         Storage.save();
         
